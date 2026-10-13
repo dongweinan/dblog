@@ -15,6 +15,6 @@ export default defineConfig({
   server: {
     host: '0.0.0.0', //监听所有地址，局域网可访问
     port: 7788, //端口号
-    open: true,
+    open: false,
   },
 })

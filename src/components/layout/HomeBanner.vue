@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="w-full h-650px bg-cover bg-center bg-no-repeat flex-center flex-col gap-4 relative overflow-hidden"
-    :style="{ backgroundImage: `url(${bannerImg})` }"
-  >
+  <div class="home-banner relative w-full h-320px flex flex-col items-center justify-center gap-16px overflow-hidden pt-66px md:h-480px xl:h-650px">
     <span
       v-for="i in 200"
       :key="i"
@@ -13,38 +10,21 @@
     <img
       :src="avaterImg"
       alt="avatar"
-      class="w-100px h-100px rounded-full object-cover ring-3 ring-white/35 ring-offset-2 ring-offset-transparent shadow-xl shadow-black/20"
+      class="banner-avatar w-100px h-100px rounded-full object-cover"
     />
-    <span class="text-white text-xl font-semibold tracking-wider"
-      >TristerD</span
-    >
+    <span class="banner-name text-20px text-white font-600">TristerD</span>
 
-    <div
-      class="w-200px h-1px relative"
-      style="
-        background: linear-gradient(
-          to right,
-          rgba(0, 0, 0, 0.7) 0%,
-          var(--vh-white-color) 35%,
-          var(--vh-white-color) 65%,
-          rgba(0, 0, 0, 0.7) 100%
-        );
-        opacity: 0.5;
-      "
-    />
+    <div class="banner-line w-200px h-1px" />
 
-    <span class="text-white/80 text-sm h-5">
+    <span class="h-20px text-14px text-white/80">
       {{ displayText }}
-      <span
-        class="inline-block w-1px h-4 bg-white/80 ml-1 animate-pulse align-middle"
-      />
+      <span class="banner-caret ml-4px inline-block h-16px w-1px align-middle bg-white/80" />
     </span>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import bannerImg from '@/assets/images/home_banner.png'
 import avaterImg from '@/assets/images/avater.png'
 
 const texts = ['一蓑烟雨任平生，也无风雨也无晴']
@@ -129,6 +109,43 @@ function particleStyle(i: number) {
 </script>
 
 <style scoped>
+.home-banner {
+  background: url('@/assets/images/home_banner.png') center / cover no-repeat;
+}
+
+.banner-caret {
+  animation: caret-blink 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes caret-blink {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.banner-avatar {
+  box-shadow:
+    0 0 0 2px transparent,
+    0 0 0 5px rgba(255, 255, 255, 0.35),
+    0 20px 25px -5px rgba(0, 0, 0, 0.2),
+    0 8px 10px -6px rgba(0, 0, 0, 0.2);
+}
+
+.banner-name {
+  letter-spacing: 0.05em;
+}
+
+.banner-line {
+  opacity: 0.5;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.7) 0%,
+    var(--vh-white-color) 35%,
+    var(--vh-white-color) 65%,
+    rgba(0, 0, 0, 0.7) 100%
+  );
+}
+
 .particle {
   position: absolute;
   bottom: -10px;
