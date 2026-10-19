@@ -7,6 +7,12 @@
   --border-color: #e5e7eb;
   --vh-box-shadow: 0 3px 8px 6px #07111b0d;
   --vh-white-color: #ffffff;
+  --vh-main-color: #01c4b6;
+  --vh-font-color: #34495e;
+  --vh-font-66: rgb(52 73 94 / 66%);
+  --vh-font-28: rgb(52 73 94 / 28%);
+  --vh-card-line: #eeeeee;
+  --vh-row-hover: #eeeff3;
 }
 
 html.dark {
@@ -15,6 +21,11 @@ html.dark {
   --text-primary: #f0f6fc;
   --text-secondary: #8b949e;
   --border-color: #30363d;
+  --vh-font-color: #c9d1d9;
+  --vh-font-66: rgb(201 209 217 / 66%);
+  --vh-font-28: rgb(201 209 217 / 40%);
+  --vh-card-line: #30363d;
+  --vh-row-hover: #21262d;
 }
 
 body {

@@ -10,7 +10,7 @@
           <router-link
             :to="item.to"
             class="nav-link flex items-center gap-8px px-12px py-4px rounded-8px"
-            :class="{ 'is-active': route.path === item.to }"
+            :class="{ 'is-active': isActive(item.to) }"
           >
             <component :is="item.icon" class="w-24px h-24px" />
             <span>{{ item.name }}</span>
@@ -61,7 +61,7 @@
               <router-link
                 :to="item.to"
                 class="nav-link drawer-link flex items-center gap-8px rounded-8px px-12px py-10px"
-                :class="{ 'is-active': route.path === item.to }"
+                :class="{ 'is-active': isActive(item.to) }"
               >
                 <component :is="item.icon" class="w-24px h-24px" />
                 <span>{{ item.name }}</span>
@@ -100,6 +100,10 @@ const navItems: NavItem[] = [
   { name: '动态', icon: ActiveIcon, to: '/activities' },
   { name: '关于', icon: AboutIcon, to: '/about' },
 ]
+
+function isActive(to: string) {
+  return route.path === to || route.path.startsWith(`${to}/`)
+}
 
 function onKeydown(event: KeyboardEvent) {
   if (event.key === 'Escape') {
