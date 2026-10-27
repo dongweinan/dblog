@@ -51,30 +51,6 @@
           </p>
         </div>
       </article>
-
-      <nav
-        v-if="newer || older"
-        class="ot-article"
-        :class="{ 'only-next': !newer && older }"
-        aria-label="相邻文章"
-      >
-        <router-link
-          v-if="newer"
-          :to="`/articles/${newer.id}`"
-          class="art-item"
-          :aria-label="`上一篇：${newer.title}`"
-        >
-          <span>{{ newer.title }}</span>
-        </router-link>
-        <router-link
-          v-if="older"
-          :to="`/articles/${older.id}`"
-          class="art-item is-older"
-          :aria-label="`下一篇：${older.title}`"
-        >
-          <span>{{ older.title }}</span>
-        </router-link>
-      </nav>
     </template>
   </div>
 </template>
@@ -96,15 +72,6 @@ const index = computed(() =>
 const article = computed(() =>
   index.value >= 0 ? articles[index.value] : null,
 )
-const newer = computed(() =>
-  index.value > 0 ? articles[index.value - 1] : null,
-)
-const older = computed(() =>
-  index.value >= 0 && index.value < articles.length - 1
-    ? articles[index.value + 1]
-    : null,
-)
-
 const charCount = computed(() => article.value?.summary.length ?? 0)
 const minutes = computed(() => Math.max(1, Math.ceil(charCount.value / 400)))
 </script>
@@ -259,88 +226,9 @@ const minutes = computed(() => Math.max(1, Math.ceil(charCount.value / 400)))
   background: #b984df18;
 }
 
-.ot-article {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  height: 5.88rem;
-  margin-top: 1rem;
-  overflow: hidden;
-  border-radius: 0.88rem;
-  background: var(--bg-card);
-  box-shadow: var(--vh-box-shadow);
-}
-
-.only-next .art-item {
-  grid-column: 2;
-}
-
-.art-item {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 1rem;
-  background: linear-gradient(135deg, #5d6d7e, #8ea4b8) center / cover;
-  color: #fff;
-  text-decoration: none;
-}
-
-.art-item.is-older {
-  background: linear-gradient(135deg, #3e6b68, #7eb8b0);
-}
-
-.art-item::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgb(0 0 0 / 28%);
-  backdrop-filter: blur(0.36rem);
-  transition: 0.18s;
-}
-
-.art-item:hover::before,
-.art-item:focus-visible::before {
-  background: rgb(0 0 0 / 18%);
-  backdrop-filter: blur(0);
-}
-
-.art-item span {
-  position: relative;
-  z-index: 1;
-  font-size: 0.875rem;
-  line-height: 1.6;
-  text-align: center;
-}
-
-.art-item:focus-visible {
-  outline: 2px solid var(--vh-main-color);
-  outline-offset: -3px;
-}
-
 @media (max-width: 999px) {
   .post > header h1 {
     font-size: 1.36rem;
-  }
-}
-
-@media (max-width: 640px) {
-  .ot-article {
-    grid-template-columns: 1fr;
-    height: auto;
-  }
-
-  .only-next .art-item {
-    grid-column: auto;
-  }
-
-  .art-item {
-    min-height: 4.5rem;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .art-item::before {
-    transition: none;
   }
 }
 </style>

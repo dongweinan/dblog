@@ -9,7 +9,7 @@
     <canvas ref="canvasRef" class="profile-confetti" aria-hidden="true" />
     <div class="flex flex-col items-center px-24px pt-36px pb-28px">
       <img
-        class="profile-avatar mb-16px h-88px w-88px rounded-full object-cover"
+        class="profile-avatar mb-16px h-88px w-88px rounded-2 object-cover"
         src="@/assets/images/avater.png"
         alt="头像"
       />
@@ -336,13 +336,6 @@ onUnmounted(() => {
 
 .profile-label {
   letter-spacing: 0.06em;
-}
-
-.profile-avatar {
-  box-shadow:
-    0 0 0 3px #fff,
-    0 0 0 4px rgba(61, 126, 255, 0.4),
-    0 10px 22px rgba(7, 17, 27, 0.12);
 }
 
 .profile-stats {

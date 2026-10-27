@@ -1,0 +1,28 @@
+{
+  "bio": {
+    "name": "TristerD",
+    "role": "前端开发工程师",
+    "born": 1997,
+    "location": "北京",
+    "intro": "一名热爱前端开发的工程师，关注用户体验与交互细节。喜欢用代码构建优雅的界面，也喜欢用文字记录生活与思考。\n\n工作之余喜欢读书、健身、摄影，偶尔写点随笔。相信技术是为了让生活更美好，代码之外还有更广阔的世界。",
+    "contact": {
+      "email": "tristerd@example.com",
+      "wechat": "TristerD_WeChat"
+    }
+  },
+  "skills": [
+    {
+      "group": "前端框架",
+      "items": ["Vue 3", "React", "TypeScript", "Nuxt", "Next.js"]
+    },
+    {
+      "group": "样式 & 工程化",
+      "items": ["Tailwind CSS", "UnoCSS", "Vite", "Webpack", "pnpm"]
+    },
+    {
+      "group": "后端 & 工具",
+      "items": ["Node.js", "NestJS", "Git", "Docker", "VS Code"]
+    }
+  ],
+  "aboutBlog": "这个博客是个人自留地，记录技术笔记、读书心得和生活碎片。\n\n技术文章力求简洁实用，不堆砌概念；随笔类文字随性而写，不刻意雕琢。希望这里能成为一个安静思考的角落，也欢迎路过的你停下来看看。"
+}
