@@ -16,5 +16,11 @@ export default defineConfig({
     host: '0.0.0.0', //监听所有地址，局域网可访问
     port: 7788, //端口号
     open: false,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8877',
+        changeOrigin: true,
+      },
+    },
   },
 })

@@ -56,22 +56,32 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import articlesData from '@/data/articles.json'
+import { fetchPost } from '@/api/posts'
 import type { Article } from '@/types/article'
 
 const route = useRoute()
-const articles = [...(articlesData as Article[])].sort((a, b) =>
-  b.date.localeCompare(a.date),
+const article = ref<Article | null>(null)
+
+watch(
+  () => route.params.id,
+  async (slug) => {
+    if (typeof slug !== 'string') {
+      article.value = null
+      return
+    }
+    article.value = null
+    try {
+      article.value = await fetchPost(slug)
+    } catch (err) {
+      console.error('加载文章详情失败', err)
+      article.value = null
+    }
+  },
+  { immediate: true },
 )
 
-const index = computed(() =>
-  articles.findIndex((item) => item.id === route.params.id),
-)
-const article = computed(() =>
-  index.value >= 0 ? articles[index.value] : null,
-)
 const charCount = computed(() => article.value?.summary.length ?? 0)
 const minutes = computed(() => Math.max(1, Math.ceil(charCount.value / 400)))
 </script>

@@ -85,7 +85,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
-import articlesData from '@/data/articles.json'
+import { fetchPosts } from '@/api/posts'
 import { categoryColor, formatArticleDate, type Article } from '@/types/article'
 
 const props = withDefaults(
@@ -102,12 +102,13 @@ const ALL = '全部'
 const ROWS = 4
 const THREE_COLUMNS_AT = 860
 
-const articles = [...(articlesData as Article[])].sort((a, b) =>
-  b.date.localeCompare(a.date),
-)
+const articles = ref<Article[]>([])
+const loading = ref(true)
 
-const categories = [...new Set(articles.map((item) => item.category))]
-const categoryChips = [ALL, ...categories]
+const categories = computed(() => [
+  ...new Set(articles.value.map((item) => item.category)),
+])
+const categoryChips = computed(() => [ALL, ...categories.value])
 const activeCategory = ref(ALL)
 const boardRef = ref<HTMLElement | null>(null)
 const columns = ref(estimateColumns())
@@ -128,8 +129,8 @@ function syncColumns(width: number) {
 }
 
 const filteredArticles = computed(() => {
-  if (activeCategory.value === ALL) return articles
-  return articles.filter((item) => item.category === activeCategory.value)
+  if (activeCategory.value === ALL) return articles.value
+  return articles.value.filter((item) => item.category === activeCategory.value)
 })
 
 const pageCount = computed(() =>
@@ -151,7 +152,16 @@ watch(pageSize, () => {
     currentPage.value = Math.max(pageCount.value, 1)
 })
 
-onMounted(() => {
+onMounted(async () => {
+  try {
+    const { list } = await fetchPosts()
+    articles.value = [...list].sort((a, b) => b.date.localeCompare(a.date))
+  } catch (err) {
+    console.error('加载文章列表失败', err)
+  } finally {
+    loading.value = false
+  }
+
   const board = boardRef.value
   if (!board) return
   const style = getComputedStyle(board)
