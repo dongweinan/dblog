@@ -62,8 +62,9 @@
 
 <script setup lang="ts">
 import type { Component } from 'vue'
-import { onMounted, onUnmounted, ref } from 'vue'
-import articlesData from '@/data/articles.json'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { fetchPosts } from '@/api/posts'
+import type { Article } from '@/types/article'
 import WeiboIcon from '@/assets/icons/weibo.svg?component'
 import WeiboActiveIcon from '@/assets/icons/weibo-active.svg?component'
 import GithubIcon from '@/assets/icons/github.svg?component'
@@ -106,13 +107,19 @@ const COLORS = [
   'Crimson',
 ]
 
-const articles = articlesData as { category: string; tags: string[] }[]
+const articles = ref<Article[]>([])
 
-const stats = [
-  { label: '文章', value: articles.length },
-  { label: '分类', value: new Set(articles.map((item) => item.category)).size },
-  { label: '标签', value: new Set(articles.flatMap((item) => item.tags)).size },
-]
+const stats = computed(() => [
+  { label: '文章', value: articles.value.length },
+  {
+    label: '分类',
+    value: new Set(articles.value.map((item) => item.category)).size,
+  },
+  {
+    label: '标签',
+    value: new Set(articles.value.flatMap((item) => item.tags)).size,
+  },
+])
 
 const socials: SocialLink[] = [
   {
@@ -281,11 +288,17 @@ function stopConfetti() {
   ctx?.clearRect(0, 0, width, height)
 }
 
-onMounted(() => {
+onMounted(async () => {
   syncCanvasSize()
   if (cardRef.value) {
     resizeObserver = new ResizeObserver(syncCanvasSize)
     resizeObserver.observe(cardRef.value)
+  }
+  try {
+    const { list } = await fetchPosts()
+    articles.value = list
+  } catch (err) {
+    console.error('加载文章统计失败', err)
   }
 })
 

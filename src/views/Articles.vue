@@ -26,17 +26,24 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import articlesData from '@/data/articles.json'
+import { computed, onMounted, ref } from 'vue'
+import { fetchPosts } from '@/api/posts'
 import type { Article } from '@/types/article'
 
-const articles = [...(articlesData as Article[])].sort((a, b) =>
-  b.date.localeCompare(a.date),
-)
+const articles = ref<Article[]>([])
+
+onMounted(async () => {
+  try {
+    const { list } = await fetchPosts()
+    articles.value = [...list].sort((a, b) => b.date.localeCompare(a.date))
+  } catch (err) {
+    console.error('加载文章归档失败', err)
+  }
+})
 
 const groups = computed(() => {
   const buckets: { year: string; items: Article[] }[] = []
-  for (const item of articles) {
+  for (const item of articles.value) {
     const year = item.date.slice(0, 4)
     const last = buckets[buckets.length - 1]
     if (last?.year === year) last.items.push(item)

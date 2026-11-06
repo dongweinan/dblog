@@ -1,5 +1,7 @@
 <template>
-  <div class="home-banner relative w-full h-320px flex flex-col items-center justify-center gap-16px overflow-hidden pt-66px md:h-480px xl:h-650px">
+  <div
+    class="home-banner relative w-full h-220px flex flex-col items-center justify-center gap-10px overflow-hidden pt-66px md:h-340px xl:h-430px"
+  >
     <span
       v-for="i in 200"
       :key="i"
@@ -10,15 +12,17 @@
     <img
       :src="avaterImg"
       alt="avatar"
-      class="banner-avatar w-100px h-100px rounded-full object-cover"
+      class="banner-avatar w-80px h-80px rounded-full object-cover"
     />
-    <span class="banner-name text-20px text-white font-600">TristerD</span>
+    <span class="banner-name text-18px text-white font-600">TristerD</span>
 
-    <div class="banner-line w-200px h-1px" />
+    <div class="banner-line w-160px h-1px" />
 
-    <span class="h-20px text-14px text-white/80">
+    <span class="h-18px text-13px text-white/80">
       {{ displayText }}
-      <span class="banner-caret ml-4px inline-block h-16px w-1px align-middle bg-white/80" />
+      <span
+        class="banner-caret ml-4px inline-block h-16px w-1px align-middle bg-white/80"
+      />
     </span>
   </div>
 </template>

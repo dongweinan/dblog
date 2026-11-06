@@ -52,22 +52,21 @@
 </template>
 
 <script setup lang="ts">
-import momentsData from '@/data/moments.json'
+import { onMounted, ref } from 'vue'
+import { fetchMoments, type Moment } from '@/api/moments'
 
-interface Moment {
-  id: string
-  content: string
-  date: string
-  time: string
-  weather?: string
-  mood?: string
-  location?: string
-  images?: string[]
-}
+const moments = ref<Moment[]>([])
 
-const moments = [...(momentsData as Moment[])].sort(
-  (a, b) => b.date.localeCompare(a.date) || b.time.localeCompare(a.time),
-)
+onMounted(async () => {
+  try {
+    const { list } = await fetchMoments()
+    moments.value = [...list].sort(
+      (a, b) => b.date.localeCompare(a.date) || b.time.localeCompare(a.time),
+    )
+  } catch (err) {
+    console.error('加载动态失败', err)
+  }
+})
 
 function formatDate(date: string) {
   const [, m, d] = date.split('-')
