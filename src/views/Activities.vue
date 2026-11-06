@@ -3,6 +3,22 @@
     class="moments flex flex-col gap-14px px-6px pb-24px"
     aria-label="动态"
   >
+    <div
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 50px;
+        background: red;
+        color: white;
+        font-size: 30px;
+        z-index: 99999;
+        text-align: center;
+      "
+    >
+      ⚠️ 前端代码已成功更新 ⚠️
+    </div>
     <template v-if="moments.length === 0">
       <p class="py-64px text-center" style="color: var(--vh-font-66)">
         还没有动态
