@@ -12,6 +12,7 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  base: './',
   server: {
     host: '0.0.0.0', //监听所有地址，局域网可访问
     port: 7788, //端口号
