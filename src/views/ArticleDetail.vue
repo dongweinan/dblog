@@ -66,14 +66,14 @@ const article = ref<Article | null>(null)
 
 watch(
   () => route.params.id,
-  async (slug) => {
-    if (typeof slug !== 'string') {
+  async (id) => {
+    if (typeof id !== 'string') {
       article.value = null
       return
     }
     article.value = null
     try {
-      article.value = await fetchPost(slug)
+      article.value = await fetchPost(id)
     } catch (err) {
       console.error('加载文章详情失败', err)
       article.value = null

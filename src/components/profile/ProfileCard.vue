@@ -63,8 +63,7 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { fetchPosts } from '@/api/posts'
-import type { Article } from '@/types/article'
+import { fetchStats, type Stats } from '@/api/posts'
 import WeiboIcon from '@/assets/icons/weibo.svg?component'
 import WeiboActiveIcon from '@/assets/icons/weibo-active.svg?component'
 import GithubIcon from '@/assets/icons/github.svg?component'
@@ -107,17 +106,17 @@ const COLORS = [
   'Crimson',
 ]
 
-const articles = ref<Article[]>([])
+const statsData = ref<Stats>({ postCount: 0, categoryCount: 0, tagCount: 0 })
 
 const stats = computed(() => [
-  { label: '文章', value: articles.value.length },
+  { label: '文章', value: statsData.value.postCount },
   {
     label: '分类',
-    value: new Set(articles.value.map((item) => item.category)).size,
+    value: statsData.value.categoryCount,
   },
   {
     label: '标签',
-    value: new Set(articles.value.flatMap((item) => item.tags)).size,
+    value: statsData.value.tagCount,
   },
 ])
 
@@ -295,8 +294,7 @@ onMounted(async () => {
     resizeObserver.observe(cardRef.value)
   }
   try {
-    const { list } = await fetchPosts()
-    articles.value = list
+    statsData.value = await fetchStats()
   } catch (err) {
     console.error('加载文章统计失败', err)
   }
