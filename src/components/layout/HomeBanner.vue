@@ -1,9 +1,9 @@
 <template>
   <div
-    class="home-banner relative w-full h-220px flex flex-col items-center justify-center gap-10px overflow-hidden pt-66px md:h-340px xl:h-430px"
+    class="home-banner relative w-full h-40vh h-[40dvh] flex flex-col items-center justify-center gap-10px overflow-hidden pt-66px min-h-300px md:h-60vh md:h-[60dvh]"
   >
     <span
-      v-for="i in 200"
+      v-for="i in particleCount"
       :key="i"
       class="particle"
       :style="particleStyle(i)"
@@ -36,6 +36,16 @@ const displayText = ref('')
 const typingSpeed = 120
 const deletingSpeed = 60
 const pauseDuration = 2000
+
+// 移动端减少粒子数量，避免低端设备动画掉帧导致气泡不可见
+const mq = window.matchMedia('(max-width: 767px)')
+const particleCount = ref(mq.matches ? 60 : 200)
+
+function updateParticleCount() {
+  particleCount.value = mq.matches ? 60 : 200
+}
+
+mq.addEventListener?.('change', updateParticleCount)
 
 let timer: ReturnType<typeof setTimeout> | null = null
 let charIndex = 0
@@ -107,7 +117,6 @@ function particleStyle(i: number) {
     borderRadius: ratios[type],
     animationDelay: `${-r3 * 16}s`,
     animationDuration: `${12 + r4 * 10}s`,
-    opacity: 0,
   }
 }
 </script>
@@ -155,13 +164,24 @@ function particleStyle(i: number) {
   bottom: -10px;
   background: rgba(255, 255, 255, 0.85);
   box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.4);
+  opacity: 0;
+  will-change: transform;
   animation: float-up 16s ease-in infinite both;
   pointer-events: none;
 }
 
+/* 系统开启"减弱动态效果"时，保留静态可见的气泡，避免动画不执行导致全透明 */
+@media (prefers-reduced-motion: reduce) {
+  .particle {
+    animation: none;
+    opacity: 0.35;
+    transform: scale(0.6);
+  }
+}
+
 @keyframes float-up {
   0% {
-    transform: translateY(0) scale(0);
+    transform: translate3d(0, 0, 0) scale(0);
     opacity: 0;
   }
   10% {
@@ -174,7 +194,7 @@ function particleStyle(i: number) {
     opacity: 0.4;
   }
   100% {
-    transform: translateY(-700px) scale(1.5);
+    transform: translate3d(0, -700px, 0) scale(1.5);
     opacity: 0;
   }
 }
