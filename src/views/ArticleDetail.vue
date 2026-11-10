@@ -34,7 +34,7 @@
           </div>
         </header>
         <div class="post-body">
-          <p>{{ article.summary }}</p>
+          <div class="markdown-body" v-html="renderedContent" />
           <p
             v-if="article.tags.length"
             class="tag-list"
@@ -58,11 +58,61 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import MarkdownIt from 'markdown-it'
+import hljs from 'highlight.js'
+import 'highlight.js/styles/github.css'
 import { fetchPost } from '@/api/posts'
 import type { Article } from '@/types/article'
 
 const route = useRoute()
 const article = ref<Article | null>(null)
+
+/** 转义 HTML 特殊字符，防止未识别语言的代码块注入标签 */
+function escapeHtml(str: string) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+}
+
+const md = new MarkdownIt({
+  html: false,
+  linkify: true,
+  breaks: false,
+  typographer: true,
+  highlight(str: string, lang: string) {
+    if (lang && hljs.getLanguage(lang)) {
+      try {
+        return (
+          '<pre class="hljs"><code>' +
+          hljs.highlight(str, { language: lang, ignoreIllegals: true }).value +
+          '</code></pre>'
+        )
+      } catch {
+        /* 忽略高亮失败 */
+      }
+    }
+    return '<pre class="hljs"><code>' + escapeHtml(str) + '</code></pre>'
+  },
+})
+
+/** 把 article.content（Markdown）渲染为 HTML */
+const renderedContent = computed(() => md.render(article.value?.content ?? ''))
+
+/** 去掉 Markdown 语法符号后统计正文字数 */
+function stripMarkdown(source: string) {
+  return source
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/[#>*`_\-[\]:!()<>|]/g, '')
+    .replace(/\s+/g, '')
+}
+
+const charCount = computed(
+  () =>
+    stripMarkdown(article.value?.content ?? article.value?.summary ?? '')
+      .length,
+)
 
 watch(
   () => route.params.id,
@@ -82,7 +132,6 @@ watch(
   { immediate: true },
 )
 
-const charCount = computed(() => article.value?.summary.length ?? 0)
 const minutes = computed(() => Math.max(1, Math.ceil(charCount.value / 400)))
 </script>
 
@@ -175,6 +224,153 @@ const minutes = computed(() => Math.max(1, Math.ceil(charCount.value / 400)))
 .post-body > p:first-child {
   font-size: 1rem;
   line-height: 1.9;
+}
+
+.markdown-body {
+  font-size: 1rem;
+  line-height: 1.9;
+  color: var(--vh-font-color);
+  word-break: break-word;
+}
+
+.markdown-body > :first-child {
+  margin-top: 0;
+}
+
+.markdown-body > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown-body :deep(h1),
+.markdown-body :deep(h2),
+.markdown-body :deep(h3),
+.markdown-body :deep(h4),
+.markdown-body :deep(h5),
+.markdown-body :deep(h6) {
+  margin: 1.5em 0 0.7em;
+  line-height: 1.4;
+  color: var(--text-primary);
+}
+
+.markdown-body :deep(h1) {
+  font-size: 1.55em;
+}
+
+.markdown-body :deep(h2) {
+  font-size: 1.3em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--vh-card-line);
+}
+
+.markdown-body :deep(h3) {
+  font-size: 1.12em;
+}
+
+.markdown-body :deep(p) {
+  margin: 0.9em 0;
+}
+
+.markdown-body :deep(a) {
+  color: var(--vh-main-color);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+
+.markdown-body :deep(a:hover) {
+  border-bottom-color: currentColor;
+}
+
+.markdown-body :deep(strong) {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.markdown-body :deep(ul),
+.markdown-body :deep(ol) {
+  margin: 0.9em 0;
+  padding-left: 1.5em;
+}
+
+.markdown-body :deep(li) {
+  margin: 0.3em 0;
+}
+
+.markdown-body :deep(li > p) {
+  margin: 0;
+}
+
+.markdown-body :deep(blockquote) {
+  margin: 1em 0;
+  padding: 0.4em 1em;
+  border-left: 3px solid var(--vh-main-color);
+  background: var(--vh-row-hover);
+  border-radius: 0 8px 8px 0;
+  color: var(--vh-font-66);
+}
+
+.markdown-body :deep(blockquote p) {
+  margin: 0.4em 0;
+}
+
+.markdown-body :deep(code) {
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85em;
+  background: var(--vh-row-hover);
+  color: #d63384;
+}
+
+.markdown-body :deep(pre) {
+  margin: 1em 0;
+  padding: 0.9rem 1rem;
+  overflow: auto;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.markdown-body :deep(pre code) {
+  padding: 0;
+  border-radius: 0;
+  font-size: inherit;
+  background: transparent;
+  color: inherit;
+}
+
+.markdown-body :deep(img) {
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+.markdown-body :deep(hr) {
+  margin: 1.8em 0;
+  border: none;
+  height: 1px;
+  background: var(--vh-card-line);
+}
+
+.markdown-body :deep(table) {
+  width: 100%;
+  margin: 1em 0;
+  border-collapse: collapse;
+  font-size: 0.92em;
+}
+
+.markdown-body :deep(th),
+.markdown-body :deep(td) {
+  padding: 0.5em 0.8em;
+  border: 1px solid var(--vh-card-line);
+  text-align: left;
+}
+
+.markdown-body :deep(th) {
+  background: var(--vh-row-hover);
+  color: var(--text-primary);
+}
+
+.markdown-body :deep(td) {
+  background: transparent;
 }
 
 .tag-list {

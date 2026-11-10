@@ -57,18 +57,25 @@
         >
           ‹
         </button>
-        <button
-          v-for="page in pageCount"
-          :key="page"
-          type="button"
-          class="pager-btn"
-          :class="{ 'is-active': page === currentPage }"
-          :aria-current="page === currentPage ? 'page' : undefined"
-          :aria-label="`第 ${page} 页`"
-          @click="goTo(page)"
-        >
-          {{ page }}
-        </button>
+        <template v-for="(page, i) in pagerButtons" :key="i">
+          <span
+            v-if="page === '…'"
+            class="pager-btn pager-ellipsis"
+            aria-hidden="true"
+            >…</span
+          >
+          <button
+            v-else
+            type="button"
+            class="pager-btn"
+            :class="{ 'is-active': page === currentPage }"
+            :aria-current="page === currentPage ? 'page' : undefined"
+            :aria-label="`第 ${page} 页`"
+            @click="goTo(page)"
+          >
+            {{ page }}
+          </button>
+        </template>
         <button
           type="button"
           class="pager-btn"
@@ -136,6 +143,23 @@ const filteredArticles = computed(() => {
 const pageCount = computed(() =>
   Math.ceil(filteredArticles.value.length / pageSize.value),
 )
+
+/** 折叠后的页码按钮：保留首页、末页和当前页附近，多余用省略号代替 */
+const pagerButtons = computed<(number | '…')[]>(() => {
+  const total = pageCount.value
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
+  const current = currentPage.value
+  const candidates = [1, total, current - 1, current, current + 1]
+  const pages = [...new Set(candidates)]
+    .filter((p) => p >= 1 && p <= total)
+    .sort((a, b) => a - b)
+  const result: (number | '…')[] = []
+  for (let i = 0; i < pages.length; i++) {
+    if (i > 0 && pages[i] - pages[i - 1] > 1) result.push('…')
+    result.push(pages[i])
+  }
+  return result
+})
 
 const pageArticles = computed(() => {
   if (props.limit) return filteredArticles.value.slice(0, props.limit)
@@ -353,9 +377,19 @@ function goTo(page: number) {
 
 .pager {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 8px;
   margin-top: 1.5rem;
+}
+
+.pager-ellipsis {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+  color: var(--vh-font-28);
+  pointer-events: none;
+  width: 1.4rem;
 }
 
 .pager-btn {
@@ -426,6 +460,23 @@ function goTo(page: number) {
 @container (min-width: 860px) {
   .article-grid {
     grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* 窄屏下压缩分页按钮尺寸，避免整排换行 */
+@media (max-width: 480px) {
+  .pager {
+    gap: 5px;
+  }
+
+  .pager-btn {
+    width: 1.7rem;
+    height: 1.7rem;
+    font-size: 0.75rem;
+  }
+
+  .pager-ellipsis {
+    width: 1.1rem;
   }
 }
 
